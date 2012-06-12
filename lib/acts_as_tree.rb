@@ -104,6 +104,13 @@ module ActsAsTree
   end
 
   module InstanceMethods
+    # Returns all children (recursively) of the current node.
+    #
+    #   parent.all_children # => [child1, child1_child1, child1_child2, child2, child2_child1, child3]
+    def all_children
+      self_and_all_children - [self]
+    end
+
     # Returns list of ancestors, starting from parent until root.
     #
     #   subchild1.ancestors # => [child1, root]
@@ -120,11 +127,26 @@ module ActsAsTree
       node
     end
 
+    # Checks if the current node is a root
+    #
+    #   parent.is_root? # => true
+    #   child.is_root? # => false
+    def is_root?
+      !new_record? && self.parent.nil?
+    end
+
     # Returns all siblings of the current node.
     #
     #   subchild1.siblings # => [subchild2]
     def siblings
       self_and_siblings - [self]
+    end
+
+    # Returns all children (recursively) and a reference to the current node.
+    #
+    #   parent.self_and_all_children # => [parent, child1, child1_child1, child1_child2, child2, child2_child1, child3]
+    def self_and_all_children
+      self.children.inject([self]) { |array, child| array += child.self_and_all_children }.flatten
     end
 
     # Returns all siblings and a reference to the current node.

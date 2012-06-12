@@ -174,6 +174,24 @@ class TreeTest < Test::Unit::TestCase
     assert_nil root4_child.reload.parent_id
   end
 
+	def test_all_children
+		assert_equal [@root_child1, @child1_child, @child1_child_child, @root_child2], @root1.all_children
+		assert_equal [@child1_child, @child1_child_child], @root_child1.all_children
+		assert_equal [@child1_child_child], @child1_child.all_children
+		assert_equal [], @child1_child_child.all_children
+	end
+	
+	def test_self_and_all_children
+		assert_equal [@root1, @root_child1, @child1_child, @child1_child_child, @root_child2], @root1.self_and_all_children
+		assert_equal [@child1_child, @child1_child_child], @child1_child.self_and_all_children
+		assert_equal [@child1_child_child], @child1_child_child.self_and_all_children
+	end
+
+	def test_is_root
+	  assert @root1.is_root?
+	  assert !@root_child1.is_root?
+	  assert !TreeMixin.new.is_root?
+  end
 end
 
 class TreeTestWithEagerLoading < Test::Unit::TestCase
